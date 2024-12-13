@@ -1,7 +1,4 @@
 .vs/
-/BounceSimulation/
-/Debug/
-/Release/
-/x64/
+/Binaries/
+/Intermediate/
 /*.vcxproj.user
-/*.txt
