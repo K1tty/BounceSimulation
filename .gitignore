@@ -1,0 +1,7 @@
+.vs/
+BounceSimulator/
+Debug/
+Release/
+x64/
+/*.vcxproj.user
+/*.txt
