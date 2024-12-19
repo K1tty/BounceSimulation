@@ -19,7 +19,7 @@ std::optional<SVector> Intersection(const SLine& Line1, const SLine& Line2)
 	const float Denominator = (X1 - X2) * (Y3 - Y4) - (Y1 - Y2) * (X3 - X4);
 
 	// If denominator is zero, lines are parallel or coincident
-	if (std::abs(Denominator) < 1e-6)
+	if (std::abs(Denominator) < 1e-6f)
 		return std::nullopt; // No intersection
 
 	// Calculate the intersection point using Cramer's rule
@@ -27,7 +27,7 @@ std::optional<SVector> Intersection(const SLine& Line1, const SLine& Line2)
 	const float U = ((X1 - X3) * (Y1 - Y2) - (Y1 - Y3) * (X1 - X2)) / Denominator;
 
 	// Check if the intersection point is within both line segments
-	if (T >= 0 && T <= 1 && U >= 0 && U <= 1)
+	if (T >= 0.0f && T <= 1.0f && U >= 0.0f && U <= 1.0f)
 	{
 		const float IntersectX = X1 + T * (X2 - X1);
 		const float IntersectY = Y1 + T * (Y2 - Y1);

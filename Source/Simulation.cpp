@@ -5,6 +5,8 @@
 #include "StrideView.h"
 #include "Intersection.h"
 #include "Random.h"
+#include <algorithm>
+#include <execution>
 
 // Test case: 100'000 walls/1000 Balls
 // Single-threaded Naive: 16.7 ms
@@ -34,7 +36,7 @@ void CSimulation::Reset()
 
 void CSimulation::Tick()
 {
-	for (SBall& Ball : Balls)
+	std::for_each(std::execution::seq, std::begin(Balls), std::end(Balls), [this](SBall& Ball)
 	{
 		const SVector OldPosition = Ball.Position;
 		Ball.Position += Ball.Direction * (Ball.Speed * GTimer->GetTickTime());
@@ -64,7 +66,7 @@ void CSimulation::Tick()
 				break;
 			}
 		}
-	}
+	});
 }
 
 void CSimulation::Render()

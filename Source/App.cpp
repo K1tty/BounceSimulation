@@ -154,22 +154,25 @@ bool CApp::PollEvents()
 				if (LineGizmo && (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT))
 				{
 					const SLine& Line = LineGizmo->GetLine();
+					const SVector Direction = Line.P2 - Line.P1;
+					const float DirectionLength = Length(Direction);
 
-					if (IsWallGizmo)
+					if (DirectionLength > 10.0f)
 					{
-						const CSimulation::SWall Wall = Line;
-						Simulation.SpawnWall(Wall);
-					}
-					else // is ball
-					{
-						const SVector Direction = Line.P2 - Line.P1;
+						if (IsWallGizmo)
+						{
+							const CSimulation::SWall Wall = Line;
+							Simulation.SpawnWall(Wall);
+						}
+						else // is ball
+						{
+							CSimulation::SBall Ball;
+							Ball.Position = Line.P1;
+							Ball.Direction = Normalize(Direction);
+							Ball.Speed = std::clamp(DirectionLength, 10.0f, 500.0f);
 
-						CSimulation::SBall Ball;
-						Ball.Position = Line.P1;
-						Ball.Direction = Normalize(Direction);
-						Ball.Speed = std::clamp(Length(Direction), 10.0f, 500.0f);
-
-						Simulation.SpawnBall(Ball);
+							Simulation.SpawnBall(Ball);
+						}
 					}
 
 					LineGizmo.reset();
