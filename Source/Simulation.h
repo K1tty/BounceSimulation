@@ -6,22 +6,25 @@
 
 class CSimulation
 {
-private:
+public:
 	using SWall = SLine;
 
 	struct SBall
 	{
 		SVector Position;
 		SVector Direction;
-		float Speed;
+		float Speed;  // pixels per second
 	};
 
 public:
 	void Init(uint16_t Width, uint16_t Height);
 	void Reset();
 
-	void Update();
+	void Tick();
 	void Render();
+
+	void SpawnWall(const SWall& Wall);
+	void SpawnBall(const SBall& Ball);
 
 	void SpawnRandomWalls(size_t Count);
 	void SpawnRandomBalls(size_t Count);
@@ -29,13 +32,13 @@ public:
 	void ToggleWallDestruction();
 
 private:
-	void InitBoundsWalls();
+	void SpawnBoundsWalls();
 
 private:
+	bool WallDestructionEnabled = false;
+
 	uint16_t Width = 0;
 	uint16_t Height = 0;
-
-	bool WallDestructionEnabled = false;
 
 	std::vector<SWall> Walls;
 	std::vector<SBall> Balls;

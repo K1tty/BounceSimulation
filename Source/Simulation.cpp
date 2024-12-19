@@ -21,7 +21,7 @@ void CSimulation::Init(uint16_t Width, uint16_t Height)
 	this->Width = Width;
 	this->Height = Height;
 
-	InitBoundsWalls();
+	SpawnBoundsWalls();
 }
 
 void CSimulation::Reset()
@@ -29,23 +29,23 @@ void CSimulation::Reset()
 	Walls.clear();
 	Balls.clear();
 
-	InitBoundsWalls();
+	SpawnBoundsWalls();
 }
 
-void CSimulation::Update()
+void CSimulation::Tick()
 {
 	for (SBall& Ball : Balls)
 	{
 		const SVector OldPosition = Ball.Position;
 		Ball.Position += Ball.Direction * (Ball.Speed * GTimer->GetTickTime());
 		
-		const SLine BulletTrajectory{ OldPosition, Ball.Position };
+		const SLine BallTrajectory{ OldPosition, Ball.Position };
 
 		for (size_t i = 0; i < Walls.size(); ++i)
 		{
 			const SWall& Wall = Walls[i];
 
-			const std::optional<SVector> IntersectionPoint = Intersection(BulletTrajectory, Wall);
+			const std::optional<SVector> IntersectionPoint = Intersection(BallTrajectory, Wall);
 			if (IntersectionPoint)
 			{
 				Ball.Direction = Reflect(Ball.Direction, Normalize(Normal(Wall.P2 - Wall.P1)));
@@ -85,7 +85,17 @@ void CSimulation::Render()
 	GRenderer->DrawText({0, 18}, Colors::White, Text.c_str());
 }
 
-void CSimulation::InitBoundsWalls()
+void CSimulation::SpawnWall(const SWall& Wall)
+{
+	Walls.push_back(Wall);
+}
+
+void CSimulation::SpawnBall(const SBall& Ball)
+{
+	Balls.push_back(Ball);
+}
+
+void CSimulation::SpawnBoundsWalls()
 {
 	const SRectangle Bounds(0, 0, static_cast<float>(Width), static_cast<float>(Height));
 
@@ -108,7 +118,7 @@ void CSimulation::SpawnRandomWalls(size_t Count)
 		Wall.P2.X = Random(Width);
 		Wall.P2.Y = Random(Height);
 
-		Walls.push_back(Wall);
+		SpawnWall(Wall);
 	}
 }
 
@@ -129,7 +139,7 @@ void CSimulation::SpawnRandomBalls(size_t Count)
 
 		Ball.Speed = 100.0f;
 
-		Balls.push_back(Ball);
+		SpawnBall(Ball);
 	}
 }
 

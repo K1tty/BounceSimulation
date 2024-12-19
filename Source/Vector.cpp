@@ -44,14 +44,14 @@ SVector& operator+=(SVector& Vector1, const SVector& Vector2)
 
 SVector Normalize(const SVector& Vector)
 {
-  const float Length = std::sqrt(Vector.X* Vector.X + Vector.Y* Vector.Y);
+  const float VectorLength = Length(Vector);
 
-  if (Length != 0)
+  if (VectorLength != 0)
   {
     return
     {
-      .X = Vector.X / Length,
-      .Y = Vector.Y / Length
+      .X = Vector.X / VectorLength,
+      .Y = Vector.Y / VectorLength
     };
   }
   
@@ -66,6 +66,11 @@ SVector Normal(const SVector& Vector)
 SVector Reflect(const SVector& Vector, const SVector& Normal)
 {
   return Vector - 2 * Dot(Vector, Normal) * Normal;
+}
+
+float Length(const SVector& Vector)
+{
+    return std::sqrt(Vector.X * Vector.X + Vector.Y * Vector.Y);
 }
 
 float Dot(const SVector& Vector1, const SVector& Vector2)

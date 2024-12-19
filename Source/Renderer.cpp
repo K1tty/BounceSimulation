@@ -60,36 +60,14 @@ bool CRenderer::CreateFont()
 
 void CRenderer::DestroyRenderer()
 {
-  SDL_DestroyWindow(Window);
   SDL_DestroyRenderer(Renderer);
+  SDL_DestroyWindow(Window);
   SDL_Quit();
 }
 
 void CRenderer::DestroyFont()
 {
   FC_FreeFont(Font);
-}
-
-bool CRenderer::ShouldQuit() const
-{
-  bool ShouldQuit = false;
-
-  SDL_Event e;
-  while (SDL_PollEvent(&e))
-  {
-    switch (e.type)
-    {
-      case SDL_QUIT:
-        ShouldQuit = true;
-        break;
-
-      case SDL_KEYDOWN:
-        KeyDownCallback(e.key.keysym.sym);
-        break;
-    }
-  }
-
-  return ShouldQuit;
 }
 
 void CRenderer::DrawText(SVector Position, SColor Color, const char* Text) const
@@ -166,11 +144,6 @@ void CRenderer::DrawPoints(const TStrideView<SVector>& Points, SColor Color) con
 
   SDL_SetRenderDrawColor(Renderer, Color.R, Color.G, Color.B, Color.A);
   SDL_RenderFillRectsF(Renderer, &RectangleBuffer[0], static_cast<int>(RectangleBuffer.size()));
-}
-
-void CRenderer::SetKeyDownCallback(TKeyDownCallback Callback)
-{
-  KeyDownCallback = Callback;
 }
 
 void CRenderer::PreRender()

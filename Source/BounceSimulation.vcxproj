@@ -187,6 +187,7 @@ xcopy /y /d "$(SolutionDir)Fonts\*.ttf" "$(OutDir)Fonts\"</Command>
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Intersection.cpp" />
     <ClCompile Include="Line.cpp" />
+    <ClCompile Include="LineGizmo.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="SDL_FontCache.c">
@@ -212,6 +213,7 @@ xcopy /y /d "$(SolutionDir)Fonts\*.ttf" "$(OutDir)Fonts\"</Command>
     <ClInclude Include="Color.h" />
     <ClInclude Include="Intersection.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="LineGizmo.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="SDL_FontCache.h" />
