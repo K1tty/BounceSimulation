@@ -9,7 +9,7 @@ class CSimulation
 private:
 	using SWall = SLine;
 
-	struct SBullet
+	struct SBall
 	{
 		SVector Position;
 		SVector Direction;
@@ -24,15 +24,19 @@ public:
 	void Render();
 
 	void SpawnRandomWalls(size_t Count);
-	void SpawnRandomBullets(size_t Count);
+	void SpawnRandomBalls(size_t Count);
+
+	void ToggleWallDestruction();
 
 private:
 	void InitBoundsWalls();
 
 private:
-	uint16_t Width;
-	uint16_t Height;
+	uint16_t Width = 0;
+	uint16_t Height = 0;
+
+	bool WallDestructionEnabled = false;
 
 	std::vector<SWall> Walls;
-	std::vector<SBullet> Bullets;
+	std::vector<SBall> Balls;
 };

@@ -37,8 +37,11 @@
     <ClCompile Include="ScopedStopwatch.cpp">
       <Filter>Time</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Main.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +83,9 @@
     </ClInclude>
     <ClInclude Include="ScopedStopwatch.h">
       <Filter>Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

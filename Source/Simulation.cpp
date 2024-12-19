@@ -4,6 +4,16 @@
 #include "Rectangle.h"
 #include "StrideView.h"
 #include "Intersection.h"
+#include "Random.h"
+
+// Test case: 100'000 walls/1000 Balls
+// Single-threaded Naive: 16.7 ms
+// Multi-threaded Naive: ?
+// Single-threaded QuadTree: ?
+// Multi-threaded QuadTree: ?
+// Single-threaded BVH: ?
+// Multi-threaded BVH: ?
+// GPU: ?
 
 
 void CSimulation::Init(uint16_t Width, uint16_t Height)
@@ -17,19 +27,19 @@ void CSimulation::Init(uint16_t Width, uint16_t Height)
 void CSimulation::Reset()
 {
 	Walls.clear();
-	Bullets.clear();
+	Balls.clear();
 
 	InitBoundsWalls();
 }
 
 void CSimulation::Update()
 {
-	for (SBullet& Bullet : Bullets)
+	for (SBall& Ball : Balls)
 	{
-		const SVector OldPosition = Bullet.Position;
-		Bullet.Position += Bullet.Direction * (Bullet.Speed * GTimer->GetTickTime());
+		const SVector OldPosition = Ball.Position;
+		Ball.Position += Ball.Direction * (Ball.Speed * GTimer->GetTickTime());
 		
-		const SLine BulletTrajectory{ OldPosition, Bullet.Position };
+		const SLine BulletTrajectory{ OldPosition, Ball.Position };
 
 		for (size_t i = 0; i < Walls.size(); ++i)
 		{
@@ -38,15 +48,17 @@ void CSimulation::Update()
 			const std::optional<SVector> IntersectionPoint = Intersection(BulletTrajectory, Wall);
 			if (IntersectionPoint)
 			{
-				Bullet.Direction = Reflect(Bullet.Direction, Normalize(Normal(Wall.P2 - Wall.P1)));
-				Bullet.Position = IntersectionPoint.value() + Bullet.Direction * 0.01f;
+				Ball.Direction = Reflect(Ball.Direction, Normalize(Normal(Wall.P2 - Wall.P1)));
+				Ball.Position = IntersectionPoint.value() + Ball.Direction * 0.01f;
 
-				const bool IsDynamicWall = (i >= 4);
-				//if (IsDynamicWall)
-				if (false)
+				if (WallDestructionEnabled)
 				{
-					std::swap(Walls[i], Walls.back());
-					Walls.pop_back();
+					const bool IsDynamicWall = (i >= 4);
+					if (IsDynamicWall)
+					{
+						std::swap(Walls[i], Walls.back());
+						Walls.pop_back();
+					}
 				}
 
 				break;
@@ -63,13 +75,13 @@ void CSimulation::Render()
 		GRenderer->DrawLines(WallsView, Colors::Green);
 	}
 
-	if (!Bullets.empty())
+	if (!Balls.empty())
 	{
-		const TStrideView<SVector> BulletsView(Bullets[0].Position, Bullets.size(), sizeof(SBullet));
+		const TStrideView<SVector> BulletsView(Balls[0].Position, Balls.size(), sizeof(SBall));
 		GRenderer->DrawPoints(BulletsView, Colors::Red);
 	}
 
-	std::string Text = std::format("Bullets: {} / Walls: {}", Bullets.size(), Walls.size() - 4);
+	std::string Text = std::format("Balls: {} / Walls: {}", Balls.size(), Walls.size() - 4);
 	GRenderer->DrawText({0, 18}, Colors::White, Text.c_str());
 }
 
@@ -91,32 +103,37 @@ void CSimulation::SpawnRandomWalls(size_t Count)
 	{
 		SWall Wall;
 
-		Wall.P1.X = static_cast<float>(rand() % Width);
-		Wall.P1.Y = static_cast<float>(rand() % Height);
-		Wall.P2.X = static_cast<float>(rand() % Width);
-		Wall.P2.Y = static_cast<float>(rand() % Height);
+		Wall.P1.X = Random(Width);
+		Wall.P1.Y = Random(Height);
+		Wall.P2.X = Random(Width);
+		Wall.P2.Y = Random(Height);
 
 		Walls.push_back(Wall);
 	}
 }
 
-void CSimulation::SpawnRandomBullets(size_t Count)
+void CSimulation::SpawnRandomBalls(size_t Count)
 {
-	Bullets.reserve(Bullets.size() + Count);
+	Balls.reserve(Balls.size() + Count);
 
 	for (size_t i = 0; i < Count; ++i)
 	{
-		SBullet Bullet;
+		SBall Ball;
 
-		Bullet.Position.X = static_cast<float>(rand() % Width);
-		Bullet.Position.Y = static_cast<float>(rand() % Height);
+		Ball.Position.X = Random(Width);
+		Ball.Position.Y = Random(Height);
 
-		Bullet.Direction.X = static_cast<float>(rand() % Width - Width / 2);
-		Bullet.Direction.Y = static_cast<float>(rand() % Height - Height / 2);
-		Bullet.Direction = Normalize(Bullet.Direction);
+		Ball.Direction.X = Random(-1.0f, 1.0f);
+		Ball.Direction.Y = Random(-1.0f, 1.0f);
+		Ball.Direction = Normalize(Ball.Direction);
 
-		Bullet.Speed = static_cast<float>(100);
+		Ball.Speed = 100.0f;
 
-		Bullets.push_back(Bullet);
+		Balls.push_back(Ball);
 	}
+}
+
+void CSimulation::ToggleWallDestruction()
+{
+	WallDestructionEnabled = !WallDestructionEnabled;
 }

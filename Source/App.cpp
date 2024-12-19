@@ -9,8 +9,6 @@ static const size_t WindowHeight = 800;
 
 bool CApp::Init()
 {
-	srand(0);
-
 	Simulation.Init(WindowWidth, WindowHeight);
 	
 	if (!Renderer.Init(WindowWidth, WindowHeight))
@@ -35,8 +33,10 @@ void CApp::Run()
 
 void CApp::DrawFPS()
 {
+	const bool UseSmoothing = true;
+	
 	const float FrameTime = Timer.GetTickTime();
-	const float SmoothingFactor = std::max(FrameTime, 0.1f);
+	const float SmoothingFactor = UseSmoothing ? std::max(FrameTime, 0.1f) : 1.0f;
 
 	static CSmoothedValue FPSSmoothed;
 	FPSSmoothed.Update(Timer.GetFPS(), SmoothingFactor);
@@ -51,13 +51,13 @@ void CApp::DrawFPS()
 	RenderTimeSmoothed.Update(1000 * RenderTime, SmoothingFactor);
 
 	const std::string Text = std::format("{} fps / {:.1f} ms (update: {:.1f} ms, render: {:.1f} ms)",
-		static_cast<int>(Timer.GetFPS()), //static_cast<int>(FPSSmoothed.Get()),
-		1000*FrameTime,//FrameTimeSmoothed.Get(),
-		1000*UpdateTime,//UpdateTimeSmoothed.Get(),
-		1000*RenderTime//RenderTimeSmoothed.Get()
+		static_cast<int>(FPSSmoothed.Get()),
+		FrameTimeSmoothed.Get(),
+		UpdateTimeSmoothed.Get(),
+		RenderTimeSmoothed.Get()
 	);
 
-	std::println("{} fps / {:.1f} ms (update: {:.1f} ms, render: {:.1f} ms)", static_cast<int>(Timer.GetFPS()), 1000 * FrameTime, 1000 * UpdateTime, 1000 * RenderTime);
+	//std::println("{} fps / {:.1f} ms (update: {:.1f} ms, render: {:.1f} ms)", static_cast<int>(Timer.GetFPS()), 1000 * FrameTime, 1000 * UpdateTime, 1000 * RenderTime);
 	Renderer.DrawText(SVector{ 0, 0 }, Colors::White, Text.c_str());
 }
 
@@ -85,14 +85,18 @@ void CApp::OnKeyDown(SDL_Keycode Key)
 {
 	switch (Key)
 	{
-		case SDLK_ESCAPE:
+		case SDLK_BACKSPACE:
 			Simulation.Reset();
+			break;
+
+		case SDLK_0:
+			Simulation.ToggleWallDestruction();
 			break;
 
 		case SDLK_1:
 			Simulation.Reset();
 			Simulation.SpawnRandomWalls(100'000);
-			Simulation.SpawnRandomBullets(1'000);
+			Simulation.SpawnRandomBalls(1'000);
 			break;
 	}
 }
