@@ -161,7 +161,7 @@ bool CApp::PollEvents()
 					{
 						if (IsWallGizmo)
 						{
-							const CSimulation::SWall Wall = Line;
+							CSimulation::SWall Wall{ Line };
 							Simulation.SpawnWall(Wall);
 						}
 						else // is ball

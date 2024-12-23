@@ -1,4 +1,5 @@
 #pragma once
+#include <mutex>
 #include <vector>
 #include "Line.h"
 #include "Vector.h"
@@ -7,13 +8,24 @@
 class CSimulation
 {
 public:
-	using SWall = SLine;
+	struct SWall
+	{
+		SLine Line;
+		bool Touched = false;
+	};
 
 	struct SBall
 	{
 		SVector Position;
 		SVector Direction;
 		float Speed;  // pixels per second
+	};
+
+private:
+	struct SWallIntersection
+	{
+		size_t WallIndex;
+		SVector IntersectionPoint;
 	};
 
 public:
@@ -35,6 +47,7 @@ private:
 	void SpawnBoundsWalls();
 
 private:
+	const size_t BoundsWallsCount = 4;
 	bool WallDestructionEnabled = false;
 
 	uint16_t Width = 0;
@@ -42,4 +55,7 @@ private:
 
 	std::vector<SWall> Walls;
 	std::vector<SBall> Balls;
+
+	std::mutex WallsMutex;
+	std::mutex BallsMutex;
 };
