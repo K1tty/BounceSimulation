@@ -77,8 +77,11 @@ void CRenderer::DrawText(SVector Position, SColor Color, const char* Text) const
 
 void CRenderer::DrawLines(const TStrideView<SLine>& Lines, SColor Color) const
 {
-  std::vector<SDL_Vertex> VertexBuffer(Lines.GetSize() * 4);
-  std::vector<int> IndexBuffer(Lines.GetSize() * 6);
+  static std::vector<SDL_Vertex> VertexBuffer;
+  VertexBuffer.resize(Lines.GetSize() * 4);
+
+  static std::vector<int> IndexBuffer;
+  IndexBuffer.resize(Lines.GetSize() * 6);
 
   const SDL_Color SDLColor = { Color.R, Color.G, Color.B, Color.A };
   const float Thickness = 1.0f / 2;
@@ -129,7 +132,9 @@ void CRenderer::DrawPoints(const TStrideView<SVector>& Points, SColor Color) con
   const float PointSize = 3.0f;
   const float PointHalfSize = PointSize / 2;
 
-  std::vector<SDL_FRect> RectangleBuffer(Points.GetSize());
+  static std::vector<SDL_FRect> RectangleBuffer;
+  RectangleBuffer.resize(Points.GetSize());
+
   for (size_t i = 0; i < RectangleBuffer.size(); ++i)
   {
     const SVector& Point = Points[i];
