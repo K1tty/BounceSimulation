@@ -151,6 +151,20 @@ void CRenderer::DrawPoints(const TStrideView<SVector>& Points, SColor Color) con
   SDL_RenderFillRectsF(Renderer, &RectangleBuffer[0], static_cast<int>(RectangleBuffer.size()));
 }
 
+void CRenderer::DrawRect(const SRectangle& Rectangle, SColor Color)
+{
+  SDL_FRect SDLRectangle
+  {
+    .x = Rectangle.X,
+    .y = Rectangle.Y,
+    .w = Rectangle.Width,
+    .h = Rectangle.Height
+  };
+
+  SDL_SetRenderDrawColor(Renderer, Color.R, Color.G, Color.B, Color.A);
+  SDL_RenderDrawRectF(Renderer, &SDLRectangle);
+}
+
 void CRenderer::PreRender()
 {
   Clear(Colors::Black);

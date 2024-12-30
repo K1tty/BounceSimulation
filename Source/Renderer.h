@@ -8,7 +8,7 @@
 #include "Line.h"
 #include "Vector.h"
 #include "StrideView.h"
-#include <functional>
+#include "Rectangle.h"
 
 
 class CRenderer
@@ -26,6 +26,7 @@ public:
 
 	void DrawLines(const TStrideView<SLine>& Lines, SColor Color) const;
 	void DrawPoints(const TStrideView<SVector>& Points, SColor Color) const;
+	void DrawRect(const SRectangle& Rectangle, SColor Color);
 
 private:
 	bool CreateRenderer(uint16_t Width, uint16_t Height);
