@@ -2,20 +2,20 @@
 
 SLine SRectangle::Top() const
 {
-  return SLine{ 0, 0, Width, 0 };
+  return SLine{ X, Y, X + Width, Y };
 }
 
 SLine SRectangle::Bottom() const
 {
-  return SLine{ 0, Height, Width, Height };
+  return SLine{ X, Y + Height, X + Width, Y + Height };
 }
 
 SLine SRectangle::Left() const
 {
-  return SLine{ 0, 0, 0, Height };
+  return SLine{ X, Y, X, Y + Height };
 }
 
 SLine SRectangle::Right() const
 {
-  return SLine{ Width, 0, Width, Height };
+  return SLine{ X + Width, Y, X + Width, Y + Height };
 }
