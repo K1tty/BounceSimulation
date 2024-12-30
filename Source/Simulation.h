@@ -24,7 +24,6 @@ public:
 
 	struct SWallIntersection
 	{
-		SWall Wall;
 		size_t WallIndex;
 		SVector IntersectionPoint;
 	};

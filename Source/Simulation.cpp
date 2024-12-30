@@ -49,7 +49,6 @@ std::optional<CSimulation::SWallIntersection> CSimulation::GetWallIntersection(c
 				MinDistance = Distance;
 				Result = SWallIntersection
 				{
-					.Wall = Wall,
 					.WallIndex = i,
 					.IntersectionPoint = IntersectionPoint.value()
 				};
@@ -75,7 +74,7 @@ void CSimulation::Tick()
 		const std::optional<SWallIntersection> WallIntersection = GetWallIntersection(BallTrajectory);
 		if (WallIntersection)
 		{
-			const SWall& Wall = WallIntersection->Wall;
+			const SWall& Wall = Walls[WallIntersection->WallIndex];
 
 			Ball.Direction = Reflect(Ball.Direction, Normalize(Normal(Wall.Line.P2 - Wall.Line.P1)));
 			Ball.Position = WallIntersection->IntersectionPoint + Ball.Direction * 0.01f;
