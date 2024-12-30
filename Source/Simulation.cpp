@@ -1,5 +1,4 @@
 #include "Simulation.h"
-#include <algorithm>
 #include <execution>
 #include <set>
 #include "Renderer.h"
@@ -33,6 +32,33 @@ void CSimulation::Reset()
 	SpawnBoundsWalls();
 }
 
+std::optional<CSimulation::SWallIntersection> CSimulation::GetWallIntersection(const SLine& Trajectory) const
+{
+	std::optional<SWallIntersection> Result = std::nullopt;
+
+	for (size_t i = 0; i < Walls.size(); ++i)
+	{
+		const SWall& Wall = Walls[i];
+		float MinDistance = std::numeric_limits<float>().max();
+		if (const std::optional<SVector> IntersectionPoint = Intersection(Trajectory, Wall.Line))
+		{
+			const float Distance = LengthSquared(*IntersectionPoint - Trajectory.P1);
+			if (Distance < MinDistance)
+			{
+				MinDistance = Distance;
+				Result = SWallIntersection
+				{
+					.Wall = Wall,
+					.WallIndex = i,
+					.IntersectionPoint = IntersectionPoint.value()
+				};
+			}
+		}
+	}
+
+	return Result;
+}
+
 void CSimulation::Tick()
 {
 	std::mutex TouchedWallsMutex;
@@ -45,35 +71,30 @@ void CSimulation::Tick()
 		
 		const SLine BallTrajectory{ OldPosition, Ball.Position };
 
-		for (size_t i = 0; i < Walls.size(); ++i)
+		const std::optional<SWallIntersection> WallIntersection = GetWallIntersection(BallTrajectory);
+		if (WallIntersection)
 		{
-			SWall& Wall = Walls[i];
+			const SWall& Wall = WallIntersection->Wall;
 
-			const std::optional<SVector> IntersectionPoint = Intersection(BallTrajectory, Wall.Line);
-			if (IntersectionPoint)
+			Ball.Direction = Reflect(Ball.Direction, Normalize(Normal(Wall.Line.P2 - Wall.Line.P1)));
+			Ball.Position = WallIntersection->IntersectionPoint + Ball.Direction * 0.01f;
+
+			const bool IsDynamicWall = (WallIntersection->WallIndex >= 4);
+			if (IsDynamicWall)
 			{
-				Ball.Direction = Reflect(Ball.Direction, Normalize(Normal(Wall.Line.P2 - Wall.Line.P1)));
-				Ball.Position = IntersectionPoint.value() + Ball.Direction * 0.01f;
-
-				const bool IsDynamicWall = (i >= 4);
-				if (IsDynamicWall)
-				{
-					std::lock_guard lock(TouchedWallsMutex);
-					TouchedWalls.insert(i);
-				}
-
-				break;
+				std::lock_guard lock(TouchedWallsMutex);
+				TouchedWalls.insert(WallIntersection->WallIndex);
 			}
 		}
 	});
 
 	if (WallDestructionEnabled)
 	{
-		size_t SwapIndex = Walls.size() - 1;
-		for (const size_t i : TouchedWalls)
+		size_t LastIndex = Walls.size() - 1;
+		for (const size_t WallIndex : TouchedWalls)
 		{
-			std::swap(Walls[i], Walls[SwapIndex]);
-			--SwapIndex;
+			Walls[WallIndex] = Walls[LastIndex];
+			--LastIndex;
 		}
 
 		Walls.resize(Walls.size() - TouchedWalls.size());
@@ -100,13 +121,11 @@ void CSimulation::Render()
 
 void CSimulation::SpawnWall(const SWall& Wall)
 {
-	std::lock_guard lock(WallsMutex);
 	Walls.push_back(Wall);
 }
 
 void CSimulation::SpawnBall(const SBall& Ball)
 {
-	std::lock_guard lock(BallsMutex);
 	Balls.push_back(Ball);
 }
 
@@ -122,10 +141,7 @@ void CSimulation::SpawnBoundsWalls()
 
 void CSimulation::SpawnRandomWalls(size_t Count)
 {
-	{
-		std::lock_guard lock(WallsMutex);
-		Walls.reserve(Walls.size() + Count + BoundsWallsCount);
-	}
+	Walls.reserve(Walls.size() + Count);
 
 	for (size_t i = 0; i < Count; ++i)
 	{
@@ -142,10 +158,7 @@ void CSimulation::SpawnRandomWalls(size_t Count)
 
 void CSimulation::SpawnRandomBalls(size_t Count)
 {
-	{
-		std::lock_guard lock(BallsMutex);
-		Balls.reserve(Balls.size() + Count);
-	}
+	Balls.reserve(Balls.size() + Count);
 
 	for (size_t i = 0; i < Count; ++i)
 	{
@@ -158,7 +171,7 @@ void CSimulation::SpawnRandomBalls(size_t Count)
 		Ball.Direction.Y = Random(-1.0f, 1.0f);
 		Ball.Direction = Normalize(Ball.Direction);
 
-		Ball.Speed = 100.0f;
+		Ball.Speed = 250.0f;
 
 		SpawnBall(Ball);
 	}

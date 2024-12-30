@@ -1,5 +1,7 @@
 #pragma once
-#include <mutex>
+#include <memory>
+#include <optional>
+#include <type_traits>
 #include <vector>
 #include "Line.h"
 #include "Vector.h"
@@ -11,7 +13,6 @@ public:
 	struct SWall
 	{
 		SLine Line;
-		bool Touched = false;
 	};
 
 	struct SBall
@@ -21,9 +22,9 @@ public:
 		float Speed;  // pixels per second
 	};
 
-private:
 	struct SWallIntersection
 	{
+		SWall Wall;
 		size_t WallIndex;
 		SVector IntersectionPoint;
 	};
@@ -45,6 +46,7 @@ public:
 
 private:
 	void SpawnBoundsWalls();
+	std::optional<SWallIntersection> GetWallIntersection(const SLine& Trajectory) const;
 
 private:
 	const size_t BoundsWallsCount = 4;
@@ -55,7 +57,4 @@ private:
 
 	std::vector<SWall> Walls;
 	std::vector<SBall> Balls;
-
-	std::mutex WallsMutex;
-	std::mutex BallsMutex;
 };
