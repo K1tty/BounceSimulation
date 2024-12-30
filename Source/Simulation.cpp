@@ -35,11 +35,11 @@ void CSimulation::Reset()
 std::optional<CSimulation::SWallIntersection> CSimulation::GetWallIntersection(const SLine& Trajectory) const
 {
 	std::optional<SWallIntersection> Result = std::nullopt;
+	float MinDistance = std::numeric_limits<float>().max();
 
 	for (size_t i = 0; i < Walls.size(); ++i)
 	{
 		const SWall& Wall = Walls[i];
-		float MinDistance = std::numeric_limits<float>().max();
 		if (const std::optional<SVector> IntersectionPoint = Intersection(Trajectory, Wall.Line))
 		{
 			const float Distance = LengthSquared(*IntersectionPoint - Trajectory.P1);
