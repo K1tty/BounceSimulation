@@ -22,6 +22,7 @@ public:
 		float Speed;  // pixels per second
 	};
 
+private:
 	struct SWallIntersection
 	{
 		size_t WallIndex;
