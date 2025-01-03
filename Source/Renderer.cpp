@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include <vector>
 
 
 CRenderer* GRenderer = nullptr;

@@ -1,7 +1,6 @@
 #pragma once
-#include <vector>
 #define SDL_MAIN_HANDLED
-#include "SDL.h"
+#include <SDL.h>
 #include "SDL_FontCache.h"
 #include "Vector.h"
 #include "Color.h"
