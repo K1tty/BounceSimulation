@@ -59,6 +59,13 @@ inline float LengthSquared(const SVector& Vector)
 	return Vector.X * Vector.X + Vector.Y * Vector.Y;
 }
 
+inline float DistanceSquared(const SVector& Vector1, const SVector& Vector2)
+{
+	const float Dx = Vector2.X - Vector1.X;
+	const float Dy = Vector2.Y - Vector1.Y;
+	return Dx * Dx + Dy * Dy;
+}
+
 inline float Length(const SVector& Vector)
 {
 	return std::sqrt(LengthSquared(Vector));
