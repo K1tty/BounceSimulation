@@ -43,7 +43,7 @@ std::optional<CSimulation::SWallIntersection> CSimulation::GetWallIntersection(c
 		const SWall& Wall = Walls[i];
 		if (const std::optional<SVector> IntersectionPoint = Intersection(Trajectory, Wall.Line))
 		{
-			const float Distance = LengthSquared(*IntersectionPoint - Trajectory.P1);
+			const float Distance = DistanceSquared(*IntersectionPoint, Trajectory.P1);
 			if (Distance < MinDistance)
 			{
 				MinDistance = Distance;

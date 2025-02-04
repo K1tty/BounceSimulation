@@ -31,7 +31,7 @@ inline std::optional<SVector> Intersection(const SLine& Line1, const SLine& Line
 	const float U = ((X1 - X3) * (Y1 - Y2) - (Y1 - Y3) * (X1 - X2)) / Denominator;
 
 	// Check if the intersection point is within both line segments
-	if (T >= 0.0f && T <= 1.0f && U >= 0.0f && U <= 1.0f)
+	if ((T >= 0.0f) * (T <= 1.0f) * (U >= 0.0f) * (U <= 1.0f))
 	{
 		const float IntersectX = X1 + T * (X2 - X1);
 		const float IntersectY = Y1 + T * (Y2 - Y1);
